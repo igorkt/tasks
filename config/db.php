@@ -2,10 +2,10 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=todo-mysql-1;dbname=yii2basic',
-    'username' => 'yii2basic',
-    'password' => 'secret',
-    'charset' => 'utf8',
+    'dsn' => 'mysql:host=' . env('DB_HOST') . ';dbname=' . env('DB_NAME'),
+    'username' => env('DB_USER'),
+    'password' => env('DB_PASS'),
+    'charset' => env('DB_CHARSET'),
 
     // Schema cache options (for production environment)
     //'enableSchemaCache' => true,

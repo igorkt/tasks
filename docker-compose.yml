@@ -7,6 +7,8 @@ services:
       - ./:/app:delegated
     ports:
       - '8000:80'
+    command: composer update && php yii migrate
+
 
   mysql:
     image: mysql:8.0.43
