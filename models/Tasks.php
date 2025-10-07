@@ -18,8 +18,6 @@ use yii\behaviors\TimestampBehavior;
  */
 class Tasks extends \yii\db\ActiveRecord
 {
-    public const DEFAULT_ITEMS_COUNT_IN_LIST = 10;
-
     /**
      * ENUM field values
      */

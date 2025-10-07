@@ -4,7 +4,6 @@ namespace app\controllers;
 
 use app\models\Tasks;
 use yii\base\DynamicModel;
-use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
 
 class TaskController extends ActiveController
@@ -28,19 +27,6 @@ class TaskController extends ActiveController
                 ]),
         ];
 
-        // return $actions;
-
-        return ArrayHelper::merge($actions, [
-            'index' => [
-                'pagination' => [
-                    'pageSize' => Tasks::DEFAULT_ITEMS_COUNT_IN_LIST,
-                ],
-                'sort' => [
-                    'defaultOrder' => [
-                        'created_at' => SORT_DESC,
-                    ],
-                ],
-            ],
-        ]);
+        return $actions;
     }
 }
