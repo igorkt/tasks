@@ -24,5 +24,5 @@ services:
       - ~/.composer-docker/cache:/root/.composer/cache:delegated
       - ./:/app:delegated
     depends_on:
-      - php
+      - mysql
     command: php yii migrate --interactive=0
