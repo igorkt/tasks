@@ -1,0 +1,11 @@
+actor: ApiTester
+step_decorators:
+    - \Codeception\Step\AsJson
+suite_namespace: \Api
+modules:
+    # enable helpers as array
+    enabled:
+        - REST:
+            url: http://localhost:80/tasks
+            depends: PhpBrowser
+            part: Json
