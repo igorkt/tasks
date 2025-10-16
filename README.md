@@ -27,5 +27,5 @@
 
 Далее выполнить
 
-> codeception Api run
+> vendor/bin/codecept run Api
 

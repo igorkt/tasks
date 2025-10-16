@@ -29,7 +29,7 @@ final class CreateTaskCest
             'title' => 'string',
             'description' => 'string',
             'priority' => 'integer',
-            'created_at' => 'integer',
+            'created_at' => 'string',
         ]);
     }
 
