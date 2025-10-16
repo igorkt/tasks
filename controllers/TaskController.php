@@ -2,31 +2,90 @@
 
 namespace app\controllers;
 
-use app\models\Tasks;
-use yii\base\DynamicModel;
-use yii\rest\ActiveController;
+use app\exceptions\NotFoundException;
+use app\services\TaskService;
+use yii\base\InvalidArgumentException;
+use yii\rest\Controller;
+use yii\web\BadRequestHttpException;
+use yii\web\UnprocessableEntityHttpException;
+use yii\db\Exception as DbException;
+use yii\web\NotFoundHttpException;
+use yii\web\Response;
+use yii\web\ServerErrorHttpException;
 
-class TaskController extends ActiveController
+class TaskController extends Controller
 {
-    public $modelClass = 'app\models\Tasks';
+    private TaskService $taskService;
 
-    public function actions()
+    public function __construct($id, $module, TaskService $taskService, $config = [])
     {
-        $actions = parent::actions();
+        parent::__construct($id, $module, $config);
+        $this->taskService = $taskService;
+    }
 
-        $possibleStatuses = array_keys(Tasks::statuses());
-
-        $actions['index']['dataFilter'] = [
-            'class' => \yii\data\ActiveDataFilter::class,
-            'searchModel' => (
-                new DynamicModel(['status']))
-                ->addRule('status', 'string')
-                ->addRule('status', 'in', [
-                    'range' => $possibleStatuses,
-                    'message' => '{attribute} must be one of this values: ' . implode(', ', $possibleStatuses)
-                ]),
+    /**
+     * @inheritdoc
+     */
+    protected function verbs()
+    {
+        return [
+            'index' => ['GET'],
+            'create' => ['POST'],
+            'update' => ['PUT'],
+            'delete' => ['DELETE'],
         ];
+    }
 
-        return $actions;
+    public function actionIndex()
+    {
+        $criteria = \Yii::$app->request->get();
+        $tasks = $this->taskService->list($criteria);
+        return $tasks;
+    }
+
+    public function actionCreate()
+    {
+        $body = \Yii::$app->request->post();
+        try {
+            $task = $this->taskService->create($body);
+            return $task;
+        } catch (InvalidArgumentException $e) {
+            throw new UnprocessableEntityHttpException($e->getMessage());
+        } catch (DbException $e) {
+            throw new ServerErrorHttpException($e->getMessage());
+        } catch (\Exception $e) {
+            throw new BadRequestHttpException($e->getMessage());
+        }
+    }
+
+    public function actionUpdate($id)
+    {
+        $body = \Yii::$app->request->post();
+        try {
+            $task = $this->taskService->update($id, $body);
+            return $task;
+        } catch (NotFoundException $e) {
+            throw new NotFoundHttpException($e->getMessage());
+        } catch (InvalidArgumentException $e) {
+            throw new UnprocessableEntityHttpException($e->getMessage());
+        } catch (DbException $e) {
+            throw new ServerErrorHttpException($e->getMessage());
+        } catch (\Exception $e) {
+            throw new BadRequestHttpException($e->getMessage());
+        }
+    }
+
+    public function actionDelete($id)
+    {
+        try {
+            $this->taskService->delete($id);
+            \Yii::$app->response->setStatusCode(204);
+        } catch (NotFoundException $e) {
+            throw new NotFoundHttpException($e->getMessage());
+        } catch (DbException $e) {
+            throw new ServerErrorHttpException($e->getMessage());
+        } catch (\Exception $e) {
+            throw new BadRequestHttpException($e->getMessage());
+        }
     }
 }

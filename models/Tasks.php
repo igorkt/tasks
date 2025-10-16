@@ -71,13 +71,13 @@ class Tasks extends \yii\db\ActiveRecord
         ];
     }
 
-
-    // filter out some fields, best used when you want to inherit the parent implementation
-    // and exclude some sensitive fields.
     public function fields()
     {
         $fields = parent::fields();
 
+        $fields['created_at'] = function () {
+            return \Yii::$app->getFormatter()->asDatetime($this->created_at);
+        };
         
         unset($fields['updated_at']);
 

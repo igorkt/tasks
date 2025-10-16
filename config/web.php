@@ -11,7 +11,19 @@ $config = [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
     ],
+    'container' => [
+        'definitions' => [
+            \app\repositories\TaskRepositoryInterface::class => \app\repositories\ar\TaskRepository::class,
+        ],
+    ],
     'components' => [
+        'formatter' => [
+            'dateFormat' => 'php:d.m.Y',
+            'datetimeFormat' => 'php:d.m.Y H:i:s',
+            'timeFormat' => 'php:H:i',
+            'timeZone' => 'Europe/Moscow',
+            'locale' => 'ru-RU',
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'DJzDrHP5h5388Jd9ia2szQL1G8fzsnGh',
