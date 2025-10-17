@@ -63,6 +63,8 @@ $config = [
             'showScriptName' => true,
             'rules' => [
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'task'],
+                'swagger/index' => 'swagger/index',
+                'swagger/ui' => 'swagger/ui',
             ],
         ],
     ],

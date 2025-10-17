@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\exceptions\NotFoundException;
+use app\models\Tasks;
 use app\services\TaskService;
 use yii\base\InvalidArgumentException;
 use yii\rest\Controller;
@@ -12,7 +13,9 @@ use yii\db\Exception as DbException;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\web\ServerErrorHttpException;
+use OpenApi\Attributes as OA;
 
+#[OA\Info(title: "Api for working with tasks. Simple CRUD operations.", version: "1.0.0")]
 class TaskController extends Controller
 {
     private TaskService $taskService;
@@ -36,6 +39,26 @@ class TaskController extends Controller
         ];
     }
 
+    #[OA\Get(
+        path: '/tasks',
+        summary: 'Get list of all tasks',
+        tags: ["Tasks"]
+    )]
+    #[OA\Parameter(
+        name: "status",
+        in: "query",
+        required: false,
+        description: "Filter task status",
+        schema: new OA\Schema("#/components/schemas/TaskStatus")
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Successful response",
+        content: new OA\JsonContent(
+            type: "array",
+            items: new OA\Items(ref: "#/components/schemas/Task")
+        )
+    )]
     public function actionIndex()
     {
         $criteria = \Yii::$app->request->get();
@@ -43,6 +66,37 @@ class TaskController extends Controller
         return $tasks;
     }
 
+    #[OA\Post(
+        path: '/tasks',
+        summary: 'Add new task',
+        tags: ["Tasks"]
+    )]
+    #[OA\RequestBody(
+        required: true,
+        description: "Task data in JSON format",
+        content: new OA\JsonContent(
+            type: "object",
+            ref: "#/components/schemas/TaskAdd"
+        )
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Successful response",
+        content: new OA\JsonContent(
+            type: "object",
+            ref: "#/components/schemas/Task"
+        )
+    )]
+    #[OA\Response(
+        response: 422,
+        description: "Validation error",
+        content: new OA\JsonContent(ref: "#/components/schemas/ValidationFailedResponse")
+    )]
+    #[OA\Response(
+        response: 500,
+        description: "Server error",
+        content: new OA\JsonContent(ref: "#/components/schemas/ServerError")
+    )]
     public function actionCreate()
     {
         $body = \Yii::$app->request->post();
@@ -58,6 +112,49 @@ class TaskController extends Controller
         }
     }
 
+    #[OA\Put(
+        path: '/tasks/{id}',
+        summary: 'Update task data',
+        tags: ["Tasks"]
+    )]
+    #[OA\Parameter(
+        name: "id",
+        in: "path",
+        description: "Unique id of task",
+        required: true,
+        schema: new OA\Schema("#/components/schemas/TaskId")
+    )]
+    #[OA\RequestBody(
+        required: false,
+        description: "Task data in JSON format",
+        content: new OA\JsonContent(
+            type: "object",
+            ref: "#/components/schemas/TaskUpdate"
+        )
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Successful response",
+        content: new OA\JsonContent(
+            type: "object",
+            ref: "#/components/schemas/Task"
+        )
+    )]
+    #[OA\Response(
+        response: 422,
+        description: "Validation error",
+        content: new OA\JsonContent(ref: "#/components/schemas/ValidationFailedResponse")
+    )]
+    #[OA\Response(
+        response: 404,
+        description: "Not found error",
+        content: new OA\JsonContent(ref: "#/components/schemas/NotFoundResponse")
+    )]
+    #[OA\Response(
+        response: 500,
+        description: "Server error",
+        content: new OA\JsonContent(ref: "#/components/schemas/ServerError")
+    )]
     public function actionUpdate($id)
     {
         $body = \Yii::$app->request->post();
@@ -75,6 +172,37 @@ class TaskController extends Controller
         }
     }
 
+    #[OA\Delete(
+        path: '/tasks/{id}',
+        summary: 'Delete task',
+        tags: ["Tasks"]
+    )]
+    #[OA\Parameter(
+        name: "id",
+        in: "path",
+        description: "Unique id of task",
+        required: true,
+        schema: new OA\Schema("#/components/schemas/TaskId")
+    )]
+    #[OA\Response(
+        response: 204,
+        description: "Successful response",
+    )]
+    #[OA\Response(
+        response: 422,
+        description: "Validation error",
+        content: new OA\JsonContent(ref: "#/components/schemas/ValidationFailedResponse")
+    )]
+    #[OA\Response(
+        response: 404,
+        description: "Not found error",
+        content: new OA\JsonContent(ref: "#/components/schemas/NotFoundResponse")
+    )]
+    #[OA\Response(
+        response: 500,
+        description: "Server error",
+        content: new OA\JsonContent(ref: "#/components/schemas/ServerError")
+    )]
     public function actionDelete($id)
     {
         try {
