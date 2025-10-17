@@ -29,3 +29,10 @@
 
 > vendor/bin/codecept run Api
 
+Так же реализована сваггер документация
+![alt text](image.png)
+
+Получить доступ к документации можно по адресу 
+
+> http://localhost:8000/swagger/ui
+
