@@ -39,6 +39,26 @@ class TaskController extends Controller
         ];
     }
 
+    /**
+     * @param string $id
+     * @param array $params
+     * @return mixed
+     */
+    public function runAction($id, $params = [])
+    {
+        try {
+            return parent::runAction($id, $params);
+        } catch (InvalidArgumentException $e) {
+            throw new UnprocessableEntityHttpException($e->getMessage());
+        } catch (NotFoundException $e) {
+            throw new NotFoundHttpException($e->getMessage());
+        } catch (DbException $e) {
+            throw new ServerErrorHttpException($e->getMessage());
+        } catch (\Exception $e) {
+            throw new BadRequestHttpException($e->getMessage());
+        }
+    }
+
     #[OA\Get(
         path: '/tasks',
         summary: 'Get list of all tasks',
@@ -100,16 +120,8 @@ class TaskController extends Controller
     public function actionCreate()
     {
         $body = \Yii::$app->request->post();
-        try {
-            $task = $this->taskService->create($body);
-            return $task;
-        } catch (InvalidArgumentException $e) {
-            throw new UnprocessableEntityHttpException($e->getMessage());
-        } catch (DbException $e) {
-            throw new ServerErrorHttpException($e->getMessage());
-        } catch (\Exception $e) {
-            throw new BadRequestHttpException($e->getMessage());
-        }
+        $task = $this->taskService->create($body);
+        return $task;
     }
 
     #[OA\Put(
@@ -158,18 +170,8 @@ class TaskController extends Controller
     public function actionUpdate($id)
     {
         $body = \Yii::$app->request->post();
-        try {
-            $task = $this->taskService->update($id, $body);
-            return $task;
-        } catch (NotFoundException $e) {
-            throw new NotFoundHttpException($e->getMessage());
-        } catch (InvalidArgumentException $e) {
-            throw new UnprocessableEntityHttpException($e->getMessage());
-        } catch (DbException $e) {
-            throw new ServerErrorHttpException($e->getMessage());
-        } catch (\Exception $e) {
-            throw new BadRequestHttpException($e->getMessage());
-        }
+        $task = $this->taskService->update($id, $body);
+        return $task;
     }
 
     #[OA\Delete(
@@ -205,15 +207,7 @@ class TaskController extends Controller
     )]
     public function actionDelete($id)
     {
-        try {
-            $this->taskService->delete($id);
-            \Yii::$app->response->setStatusCode(204);
-        } catch (NotFoundException $e) {
-            throw new NotFoundHttpException($e->getMessage());
-        } catch (DbException $e) {
-            throw new ServerErrorHttpException($e->getMessage());
-        } catch (\Exception $e) {
-            throw new BadRequestHttpException($e->getMessage());
-        }
+        $this->taskService->delete($id);
+        \Yii::$app->response->setStatusCode(204);
     }
 }
