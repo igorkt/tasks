@@ -3,7 +3,6 @@
 namespace app\controllers;
 
 use app\exceptions\NotFoundException;
-use app\models\Tasks;
 use app\services\TaskService;
 use yii\base\InvalidArgumentException;
 use yii\rest\Controller;
@@ -11,7 +10,6 @@ use yii\web\BadRequestHttpException;
 use yii\web\UnprocessableEntityHttpException;
 use yii\db\Exception as DbException;
 use yii\web\NotFoundHttpException;
-use yii\web\Response;
 use yii\web\ServerErrorHttpException;
 use OpenApi\Attributes as OA;
 
